@@ -1,9 +1,16 @@
+
 import React, { useState, useEffect } from "react";
+
+// Import the JSON file directly from the same folder
+// This approach works in webpack-based environments like Create React App
+// The import will be resolved at build time
+import jsonData from './data.json';
 
 const Dropdown = () => {
     const [selectedValues, setSelectedValues] = useState([""]);
     const [displayValues, setDisplayValues] = useState([]);
     const [nakshatramData, setNakshatramData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const options = [
         "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
@@ -15,10 +22,17 @@ const Dropdown = () => {
     ];
 
     useEffect(() => {
-        fetch("/data.json")
-            .then(response => response.json())
-            .then(data => setNakshatramData(data.Nakshatram || []))
-            .catch(error => console.error("Error loading JSON:", error));
+
+        console.log("Loading Nakshatram data from imported JSON");
+        
+        if (jsonData && jsonData.Nakshatram) {
+            setNakshatramData(jsonData.Nakshatram);
+            setIsLoading(false);
+            console.log("Successfully loaded data from imported JSON");
+        } else {
+            console.error("Imported JSON does not have the expected structure");
+            setIsLoading(false);
+        }
     }, []);
 
     const handleChange = (event, index) => {
@@ -55,6 +69,7 @@ const Dropdown = () => {
             acc.length === 0 ? currentValues : acc.filter(value => currentValues.includes(value)),
             []);
 
+        console.log("Common values:", commonValues);
         setDisplayValues(commonValues);
     };
 
@@ -73,13 +88,17 @@ const Dropdown = () => {
         }
     };
 
-    return (
-        <div style={{ width: "100%", maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-           <label style={{ fontSize: "20px", fontWeight: "bold" }}>Nakshatram: </label>
+    if (isLoading) {
+        return <div>Loading Nakshatram data...</div>;
+    }
 
-            {selectedValues.map((_, index) => (
-                <div key={index} style={{ marginBottom: "10px",marginTop: "15px", textAlign: "center"  }}>
-                    <select value={selectedValues[index]} onChange={(e) => handleChange(e, index)}>
+    return (
+        <div>
+            
+            {selectedValues.map((selectedValue, index) => (
+                <div key={index} style={{ marginBottom: "10px" }}>
+                    <label>Nakshatram {index + 1}: </label>
+                    <select value={selectedValue} onChange={(e) => handleChange(e, index)}>
                         <option value="">-- Choose --</option>
                         {options.map((option, idx) => (
                             <option key={idx} value={option}>{option}</option>
@@ -90,14 +109,14 @@ const Dropdown = () => {
                         <>
                             <span
                                 onClick={addDropdown}
-                                style={{ marginLeft: "10px", cursor: "pointer", fontSize: "20px", color: "blue" }}
+                                style={{ marginLeft: "10px", cursor: "pointer", fontSize: "18px", color: "blue" }}
                             >
                                 +
                             </span>
                             {selectedValues.length > 1 && (
                                 <span
                                     onClick={removeDropdown}
-                                    style={{ marginLeft: "10px", cursor: "pointer", fontSize: "20px", color: "red" }}
+                                    style={{ marginLeft: "10px", cursor: "pointer", fontSize: "18px", color: "red" }}
                                 >
                                     -
                                 </span>
@@ -110,37 +129,45 @@ const Dropdown = () => {
             <button
                 onClick={handleSubmit}
                 disabled={selectedValues.includes("")}
-                style={{ marginTop: "10px" }}
+                style={{ marginTop: "10px", padding: "5px 10px" }}
             >
                 Submit
             </button>
 
-            {displayValues.length === 0 && (
-                 <div style={{ marginTop: "10px", color: "red", textAlign: "center" }}>
-                    <p>No common values found.</p>
+            {displayValues.length === 0 && selectedValues.some(val => val !== "") && (
+                <div style={{ marginTop: "20px", color: "red" }}>
+                    <p>No common values found for the selected Nakshatrams.</p>
                 </div>
             )}
 
             {displayValues.length > 0 && (
-                <div style={{ marginTop: "50px" }}>
-                    {displayValues.map((value, index) => {
-                        const schedules = getSchedules(value);
-                        return (
-                            <div key={index} style={{ marginBottom: "10px" }}>
-                                <p><strong>{value}</strong></p>
-                                {schedules.length > 0 ? (
-                                    schedules.map((schedule, scheduleIndex) => (
-                                        <div key={scheduleIndex}>
-                                            <p>Date: {schedule.date}</p>
-                                            <p>Time: {schedule.time}</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No schedule available for this Nakshatram.</p>
-                                )}
-                            </div>
-                        );
-                    })}
+                <div style={{ marginTop: "20px" }}>
+                    <h3>Common Nakshatrams:</h3>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "15px" }}>
+                        {displayValues.map((value, index) => {
+                            const schedules = getSchedules(value);
+                            return (
+                                <div key={index} style={{ 
+                                    border: "1px solid #ddd",
+                                    borderRadius: "5px",
+                                    padding: "15px",
+                                    backgroundColor: "#f9f9f9"
+                                }}>
+                                    <h4 style={{ margin: "0 0 10px 0" }}>{value}</h4>
+                                    {schedules.length > 0 ? (
+                                        schedules.map((schedule, scheduleIndex) => (
+                                            <div key={scheduleIndex} style={{ marginBottom: "5px" }}>
+                                                <p style={{ margin: "5px 0" }}><strong>Date:</strong> {new Date(schedule.date).toLocaleDateString()}</p>
+                                                <p style={{ margin: "5px 0" }}><strong>Time:</strong> {schedule.time}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p style={{ color: "orange" }}>No schedule available for this Nakshatram.</p>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             )}
         </div>

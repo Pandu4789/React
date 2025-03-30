@@ -1,0 +1,8 @@
+.App {
+    background-color: #e1ccc7; /* Light gray background */
+    /* background-image: url('background.jpg'); Replace with your image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Full viewport height */
+}

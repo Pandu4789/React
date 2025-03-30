@@ -1,6 +1,6 @@
 import React from 'react';
 import Dropdown from './Dropdown';
-
+import './App.css';
 function App() {
   return (
     <div className="App" style={{  flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", textAlign: "center" }}>
