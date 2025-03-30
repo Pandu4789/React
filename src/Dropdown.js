@@ -74,11 +74,11 @@ const Dropdown = () => {
     };
 
     return (
-        <div>
-            <label>Nakshatram: </label>
+        <div style={{ width: "100%", maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+           <label style={{ fontSize: "20px", fontWeight: "bold" }}>Nakshatram: </label>
 
             {selectedValues.map((_, index) => (
-                <div key={index} style={{ marginBottom: "10px" }}>
+                <div key={index} style={{ marginBottom: "10px",marginTop: "15px", textAlign: "center"  }}>
                     <select value={selectedValues[index]} onChange={(e) => handleChange(e, index)}>
                         <option value="">-- Choose --</option>
                         {options.map((option, idx) => (
@@ -90,14 +90,14 @@ const Dropdown = () => {
                         <>
                             <span
                                 onClick={addDropdown}
-                                style={{ marginLeft: "10px", cursor: "pointer", fontSize: "18px", color: "blue" }}
+                                style={{ marginLeft: "10px", cursor: "pointer", fontSize: "20px", color: "blue" }}
                             >
                                 +
                             </span>
                             {selectedValues.length > 1 && (
                                 <span
                                     onClick={removeDropdown}
-                                    style={{ marginLeft: "10px", cursor: "pointer", fontSize: "18px", color: "red" }}
+                                    style={{ marginLeft: "10px", cursor: "pointer", fontSize: "20px", color: "red" }}
                                 >
                                     -
                                 </span>
@@ -116,13 +116,13 @@ const Dropdown = () => {
             </button>
 
             {displayValues.length === 0 && (
-                <div style={{ marginTop: "10px", color: "red" }}>
+                 <div style={{ marginTop: "10px", color: "red", textAlign: "center" }}>
                     <p>No common values found.</p>
                 </div>
             )}
 
             {displayValues.length > 0 && (
-                <div style={{ marginTop: "10px" }}>
+                <div style={{ marginTop: "50px" }}>
                     {displayValues.map((value, index) => {
                         const schedules = getSchedules(value);
                         return (
